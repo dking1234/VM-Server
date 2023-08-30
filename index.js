@@ -8,8 +8,9 @@ const protectedRoute = require('./Auth/routes/protectedRoute');
 const authController = require('./Auth/controller/authController');
 const notificationRoutes = require('./smsNotification/notificationRoutes');
 const otpRoutes = require('./OTP/otpRoutes');
-const mbBundleRoutes = require('./Services/BundleSpecification/mbBundle/mbBundleRoutes');
-
+const mbRoutes = require('./Services/BundleSpecification/mbBundle/mbRoutes');
+const secRoutes = require('./Services/BundleSpecification/SecBundle/secRoutes');
+const smsRoutes = require('./Services/BundleSpecification/smsBundle/smsRoutes');
 
 // Create the server
 const app = express();
@@ -54,6 +55,8 @@ app.use('/notification', notificationRoutes);
 app.use('/verify', otpRoutes);
 
 // Use mbBundleRoutes
-app.use('/', mbBundleRoutes);
+app.use('/mbSubscription', mbRoutes);
+app.use('/secSubscription', secRoutes);
+app.use('/smsSubscription', smsRoutes);
 
 
