@@ -40,7 +40,7 @@ const subscribeSEC = async (req, res) => {
     // Perform the subscription
     const newSubscription = new SecSubscription({
       userId,
-      mbAmount: amount,
+      secsAmount: amount,
       numberOfSECs: numberOfSECs,
       duration: duration,     // Set the duration
       timestamp: new Date(),// Set the timestamp

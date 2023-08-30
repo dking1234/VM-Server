@@ -40,7 +40,7 @@ const subscribeSMS = async (req, res) => {
     // Perform the subscription
     const newSubscription = new SmsSubscription({
       userId,
-      mbAmount: amount,
+      smsAmount: amount,
       numberOfSMSs: numberOfSMSs,
       duration: duration,     // Set the duration
       timestamp: new Date(),// Set the timestamp
