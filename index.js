@@ -11,6 +11,7 @@ const otpRoutes = require('./OTP/otpRoutes');
 const mbRoutes = require('./Services/BundleSpecification/mbBundle/mbRoutes');
 const secRoutes = require('./Services/BundleSpecification/SecBundle/secRoutes');
 const smsRoutes = require('./Services/BundleSpecification/smsBundle/smsRoutes');
+const percentageRoutes = require('./Services/BundlePercentage/percentageRoutes');
 
 // Create the server
 const app = express();
@@ -59,4 +60,5 @@ app.use('/mbSubscription', mbRoutes);
 app.use('/secSubscription', secRoutes);
 app.use('/smsSubscription', smsRoutes);
 
-
+// Use percentageRoutes
+app.use('/bundlePercentage', percentageRoutes);
