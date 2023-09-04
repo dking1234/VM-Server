@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const mbSubscriptionSchema = new mongoose.Schema({
   userId: String,
-  mbAmount: Number,
+  mbCost: Number,
   numberOfMBs: Number,
   duration: String,       // Add duration field
   timestamp: Date,        // Add timestamp field

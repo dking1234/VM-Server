@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const secSubscriptionSchema = new mongoose.Schema({
   userId: String,
-  secAmount: Number,
+  secCost: Number,
   numberOfSECs: Number,
   duration: String,       // Add duration field
   timestamp: Date,        // Add timestamp field

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const SmsSubscriptionSchema = new mongoose.Schema({
   userId: String,
-  smsAmount: Number,
+  smsCost: Number,
   numberOfSMSs: Number,
   duration: String,       // Add duration field
   timestamp: Date,        // Add timestamp field

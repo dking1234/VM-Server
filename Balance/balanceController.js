@@ -35,28 +35,32 @@ const createBalance = async (req, res) => {
 
 
 // Get balance by user ID
-const getBalanceByUserId = async (userId) => {
+const getBalanceByUserId = async (req, res) => {
   try {
+    const { userId } = req.params;
     const balance = await Balance.findOne({ user: userId });
 
     if (!balance) {
       console.log('Balance not found for userId:', userId);
-      throw new Error('Balance not found');
+      return res.status(404).json({ error: 'Balance not found' });
     }
 
     console.log('Balance found:', balance);
 
-    return balance;
+    res.status(200).json(balance);
   } catch (error) {
     console.error('Error fetching balance:', error);
-    throw new Error('Error fetching balance');
+    res.status(500).json({ error: 'Error fetching balance' });
   }
 };
 
 
 // Update balance by user ID
-const updateBalanceByUserId = async (userId, newBalance) => {
+const updateBalanceByUserId = async (req, res) => {
   try {
+    const { userId } = req.params;
+    const { newBalance } = req.body;
+
     // Find and update the balance document
     const balance = await Balance.findOneAndUpdate(
       { user: userId },
@@ -64,12 +68,17 @@ const updateBalanceByUserId = async (userId, newBalance) => {
       { new: true }
     );
 
+    if (!balance) {
+      console.log('Balance not found for userId:', userId);
+      return res.status(404).json({ error: 'Balance not found' });
+    }
+
     console.log('Balance updated:', balance);
 
-    return balance;
+    res.status(200).json(balance);
   } catch (error) {
     console.error('Error updating balance:', error);
-    throw new Error('Error updating balance');
+    res.status(500).json({ error: 'Error updating balance' });
   }
 };
 

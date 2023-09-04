@@ -11,9 +11,7 @@ const subscribeMB = async (req, res) => {
   const initialBalanceAmount = userBalance.amount;
 
   const prices = {
-    day: { mb: 2.05 },
-    week: { mb: 2.2 },
-    month: { mb: 3.1 }
+    day: { mb: 2.05 },week: { mb: 2.2 },month: { mb: 3.1 }
   };
 
   const pricePerMB = prices[duration].mb;
@@ -40,7 +38,7 @@ const subscribeMB = async (req, res) => {
     // Perform the subscription
     const newSubscription = new MBSubscription({
       userId,
-      mbAmount: amount,
+      mbCost: amount,
       numberOfMBs: numberOfMBs,
       duration: duration,     // Set the duration
       timestamp: new Date(),// Set the timestamp

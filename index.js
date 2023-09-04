@@ -56,7 +56,7 @@ app.use('/notification', notificationRoutes);
 // Mount the OTP routes
 app.use('/verify', otpRoutes);
 
-// Use mbBundleRoutes
+// Use mbBundleRoutes for specification
 app.use('/mbSubscription', mbRoutes);
 app.use('/secSubscription', secRoutes);
 app.use('/smsSubscription', smsRoutes);
@@ -65,4 +65,4 @@ app.use('/smsSubscription', smsRoutes);
 app.use('/bundlePercentage', percentageRoutes);
 
 // Use exchangeRoutes
-app.use('/bundleExchange', exchangeRoutes);
+app.use('/exchangeBundles', exchangeRoutes);
