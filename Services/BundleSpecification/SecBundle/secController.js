@@ -1,80 +1,104 @@
 const SecSubscription = require('./secModel');
 const balanceController = require('../../../Balance/balanceController');
 
-const subscribeSEC = async (req, res) => {
-  const { userId, amount, duration } = req.body;
+const subscribeSEC = async (req, res, next) => {
+try {
+const { userId, amount, duration } = req.body;
 
-  // Fetches the user balance
-  const userBalance = await balanceController.getBalanceByUserId(userId);
+// Validate input data
+if (!userId || isNaN(amount) || !['day', 'week', 'month'].includes(duration)) {
+console.log(`Invalid request data: ${req.body}`);
+res.status(400).json({ success: false, message: 'Invalid request data' });
+}
 
-  // Extract the amount from the balance object
-  const initialBalanceAmount = userBalance.amount;
+console.log(`Valid request data: ${req.body}`);
 
-  const prices = {
-    day: { sec: 1 },
-    week: { sec: 1.2 },
-    month: { sec: 2.1 }
-  };
+// Fetch the user balance
+console.log(`Fetching user balance for userId: ${userId}`);
+balanceController.getBalanceByUserId({params: {userId}}, (userBalance) => {
+console.log(`User balance: ${userBalance}`);
 
-  const pricePerSEC = prices[duration].sec;
+const initialBalanceAmount = userBalance.amount;
 
-  const numberOfSECs = Math.floor(amount / pricePerSEC);
+const prices = {
+day: { sec: 1 },
+week: { sec: 1.2 },
+month: { sec: 2.1 },
+};
 
-  const totalCost = amount;
+const pricePerSEC = prices[duration]?.sec;
 
-  if (initialBalanceAmount < totalCost) {
-    return res.json({ success: false, message: 'Insufficient balance' });
-  }
+if (!pricePerSEC) {
+console.log(`Invalid duration: ${duration}`);
+res.status(400).json({ success: false, message: 'Invalid duration' });
+}
 
-  try {
-     // Calculate the expiration date based on the duration
-     const expiration = new Date();
-     if (duration === 'day') {
-       expiration.setDate(expiration.getDate() + 1);
-     } else if (duration === 'week') {
-       expiration.setDate(expiration.getDate() + 7);
-     } else if (duration === 'month') {
-       expiration.setMonth(expiration.getMonth() + 1);
-     }
-    
-    // Perform the subscription
-    const newSubscription = new SecSubscription({
-      userId,
-      secCost: amount,
-      numberOfSECs: numberOfSECs,
-      duration: duration,     // Set the duration
-      timestamp: new Date(),// Set the timestamp
-      expiration: expiration,
-      // ...other fields
-    });
+console.log(`Price per SEC: ${pricePerSEC}`);
 
-    if (isNaN(amount) || isNaN(totalCost)) {
-      throw new Error('Invalid amount or totalCost');
-    }
-    console.log('Initial userBalance:', initialBalanceAmount);
-    console.log('Total cost:', totalCost);
-    const newBalanceAmount = initialBalanceAmount - totalCost;
-    console.log('Updated userBalance:', newBalanceAmount);
+const numberOfSECs = Math.floor(amount / pricePerSEC);
+const totalCost = amount;
 
-    // Make sure newBalanceAmount is a valid number before updating
-    if (!isNaN(newBalanceAmount)) {
-      console.log('Before saving subscription:', newSubscription);
-      await Promise.all([
-        newSubscription.save(),
-        balanceController.updateBalanceByUserId(userId, newBalanceAmount)
-      ]);
-      console.log('After saving subscription:', newSubscription);
+if (initialBalanceAmount < totalCost) {
+console.log(`Insufficient balance. Initial balance: ${initialBalanceAmount}, Total cost: ${totalCost}`);
+res.json({ success: false, message: 'Insufficient balance' });
+}
 
-      return res.json({ success: true, message: 'Subscription successfully' });
-    } else {
-      throw new Error('Invalid user balance calculation');
-    }
-  } catch (error) {
-    console.error('Subscription failed:', error);
-    return res.status(500).json({ success: false, message: 'Subscription failed' });
-  }
+// Calculate the expiration date based on the duration
+const expiration = new Date();
+switch (duration) {
+case 'day':
+expiration.setDate(expiration.getDate() + 1);
+break;
+case 'week':
+expiration.setDate(expiration.getDate() + 7);
+break;
+case 'month':
+expiration.setMonth(expiration.getMonth() + 1);
+break;
+}
+
+// Create the subscription
+const newSubscription = new SecSubscription({
+userId,
+secCost: amount,
+numberOfSECs,
+duration,
+timestamp: new Date(),
+expiration,
+// ...other fields
+});
+
+console.log(`Initial userBalance: ${initialBalanceAmount}`);
+console.log(`Total cost: ${totalCost}`);
+const newBalanceAmount = initialBalanceAmount - totalCost;
+console.log(`Updated userBalance: ${newBalanceAmount}`);
+
+// Ensure newBalanceAmount is valid before updating
+if (!isNaN(newBalanceAmount)) {
+console.log(`Before saving subscription: ${newSubscription}`);
+Promise.all([
+newSubscription.save(),
+balanceController.updateBalanceByUserId(userId, newBalanceAmount),
+]).then(() => {
+console.log(`After saving subscription: ${newSubscription}`);
+res.json({ success: true, message: 'Subscription successful' });
+}).catch((error) => {
+throw error;
+});
+
+} else {
+throw new Error('Invalid user balance calculation');
+}
+});
+
+} catch (error) {
+console.error('Subscription failed:', error);
+res.status(500).json({ success: false, message: 'Subscription failed' });
+} finally {
+// Close any connections or resources here
+}
 };
 
 module.exports = {
-  subscribeSEC,
+subscribeSEC,
 };

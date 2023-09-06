@@ -3,7 +3,7 @@ const percentageController = require('./percentageController');
 
 const router = express.Router();
 
-router.post('/', percentageController.subscribePercentage);
+router.post('/percentage', percentageController.subscribePercentage);
 
 
 module.exports = router;
